@@ -30,7 +30,12 @@ const getAngle = (total: number, n: number, offset: number) => {
     return offset + (160 / total) * n;
 };
 
-const Rotary = styled.div<{ count: number; n: number; open: boolean }>`
+const Rotary = styled.div<{
+    count: number;
+    n: number;
+    open: boolean;
+    selected: boolean;
+}>`
     /* background: #ffffc7; */
     transform-origin: 2.5vmin center;
     position: absolute;
@@ -47,7 +52,9 @@ const Rotary = styled.div<{ count: number; n: number; open: boolean }>`
         translateX(${(p) => (p.open ? "0vmin" : "-12.5vmin")});
     .circle-inside {
         transform: rotateZ(${(p) => `${-getAngle(p.count, p.n, -15)}`}deg);
-
+        border-width: 2px;
+        border-style: solid;
+        border-color: ${(p) => (p.selected ? "red" : "transparent")};
         height: 5vmin;
         width: 5vmin;
         border-radius: 100%;
@@ -56,6 +63,7 @@ const Rotary = styled.div<{ count: number; n: number; open: boolean }>`
         font-weight: bold;
         display: grid;
         place-items: center;
+        transition: all 250ms ease;
     }
 `;
 
@@ -67,10 +75,17 @@ function rotation() {
     //     }, 2500);
     // }, []);
     const [open, setOpen] = useState(true);
+    const [selected, setSelected] = useState(0);
     return (
-        <Container onClick={() => setOpen((p) => !p)}>
+        <Container>
             <div className="circle-container">
-                <div className="core-circle">
+                <div
+                    onClick={() => {
+                        setOpen((p) => !p);
+                        setSelected(0);
+                    }}
+                    className="core-circle"
+                >
                     <h5>1</h5>
                 </div>
                 {arr.map((i) => {
@@ -79,6 +94,8 @@ function rotation() {
                             open={open}
                             n={i}
                             count={arr.length}
+                            selected={i + 1 === selected}
+                            onClick={() => setSelected(i + 1)}
                             key={i + 1}
                             className="circle-rotary"
                         >
